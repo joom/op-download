@@ -18,7 +18,6 @@ program
   .description('Fetch the list of tenders from scratch')
   .action(function() {
     var db  = connect();
-    var bulk = db.tenders.initializeOrderedBulkOp();
     var num = 0;
     var rec = function (uri) {
       request(uri, function (err, res, body) {
@@ -26,25 +25,28 @@ program
         var len = body.data.length;
         num += len;
         body.data.forEach(function (obj) {
-          bulk.insert({id : obj.id});
+          db.tenders.insert({id : obj.id}, function (err) {
+            if(err) {
+              process.stderr.write(chalk.red("There is an error: " + err));
+              process.exit();
+            }
+          });
         });
         if (len > 0) {
           rec(body.next_page.uri);
         } else {
-          process.stdout.write(chalk.bgGreen("Downloaded " + num + " tender IDs."));
-          bulk.execute(function (err, res) {
-            if (err) {
-              process.stderr.write(chalk.bgRed("There is an error: " + err));
-              return;
-            }
-            process.stdout.write(chalk.green("Added " + num + " tenders to the database."));
-            process.exit();
-          });
+          process.stdout.write(chalk.green("\nDownloaded " + num + " tender IDs."));
+          process.stdout.write(chalk.green("\nDONE! Added " + num + " tenders to the database."));
+          process.exit();
         }
       });
-      process.stdout.write(chalk.red(num + " tenders fetched.\r"));
+      process.stdout.write(chalk.yellow(num + " tenders fetched...\r"));
     };
-    rec("https://public.api.openprocurement.org/api/2.3/tenders");
+    db.tenders.remove({}, function (err) {
+      if(err) {return;}
+      process.stdout.write(chalk.green("Removed all existing tenders in the database.\n"));
+      rec("https://public.api.openprocurement.org/api/2.3/tenders");
+    });
   });
 
 program
