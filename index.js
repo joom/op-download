@@ -38,11 +38,11 @@ program
               return;
             }
             process.stdout.write(chalk.green("Added " + num + " tenders to the database."));
+            process.exit();
           });
         }
       });
       process.stdout.write(chalk.red(num + " tenders fetched.\r"));
-      process.exit();
     };
     rec("https://public.api.openprocurement.org/api/2.3/tenders");
   });
