@@ -1,10 +1,9 @@
 #!/usr/bin/env node
 
-var chalk   = require('chalk');
-var mongo   = require('mongojs');
-var request = require('request');
-var async   = require('async');
-var program = require('commander');
+var chalk    = require('chalk');
+var request  = require('request');
+var async    = require('async');
+var program  = require('commander');
 var json2csv = require('json2csv');
 
 var connect = function () {
