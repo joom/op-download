@@ -55,7 +55,7 @@ program
     process.stdout.write(chalk.yellow("Starting update...\r"));
     var db  = connect();
     var num = 0;
-    db.tenders.find({}, function (err, list) {
+    db.tenders.find({}, {_id:0,id:1}, function (err, list) {
       var total = list.length;
       async.parallel(
         list.map(function (doc) {
