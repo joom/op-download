@@ -82,7 +82,11 @@ program
   .description('Generate a CSV file from the given fields in the database.')
   .action(function (fields) {
     var db  = connect();
-    db.tenders.find({},{_id: 0, id:1, "data.status": 1}, function (err, data) {
+    var obj = {_id: 0};
+    fields.forEach(function (field) {
+      obj[field] = 1;
+    });
+    db.tenders.find({}, obj, function (err, data) {
       json2csv({ data: data, fields: fields }, function(err, csv) {
         if (err) console.log(err);
         process.stdout.write(csv);
