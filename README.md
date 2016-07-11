@@ -24,3 +24,8 @@ Then to generate CSV files, you can run `node index.js csv [fields...] > output.
 ```
 
 It also supports array access, so you can use a command like: `node index.js csv id data.items[0].quantity > output.csv`
+
+## Troubleshooting
+
+If you have an error that says `FATAL ERROR: CALL_AND_RETRY_LAST Allocation failed - process out of memory`,
+try running your program like this: `node --max_old_space_size=8192 index.js ...`
