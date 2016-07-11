@@ -5,6 +5,7 @@ var request  = require('request');
 var async    = require('async');
 var program  = require('commander');
 var json2csv = require('json2csv');
+var _        = require('lodash');
 
 var connect = function () {
  return require("mongojs")("127.0.0.1:27017/op", ['tenders']);
@@ -82,12 +83,26 @@ program
   .description('Generate a CSV file from the given fields in the database.')
   .action(function (fields) {
     var db  = connect();
-    var obj = {_id: 0};
-    fields.forEach(function (field) {
-      obj[field] = 1;
-    });
-    db.tenders.find({}, obj, function (err, data) {
-      json2csv({ data: data, fields: fields }, function(err, csv) {
+    db.tenders.find({}, function (err, data) {
+      var newData = data;
+      var newField = [];
+      fields.forEach(function (field) {
+        if(field.indexOf('[') > -1) {
+          newData = newData.map(function (tender) {
+            try {
+              if(! _.isUndefined(eval("tender." + field))) {
+                tender[field] = eval("tender." + field);
+              } else {
+                tender[field] = "";
+              }
+            } catch(e) {
+              tender[field] = "";
+            }
+            return tender;
+          });
+        }
+      });
+      json2csv({ data: newData, fields: fields }, function(err, csv) {
         if (err) console.log(err);
         process.stdout.write(csv);
         process.exit();

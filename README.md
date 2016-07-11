@@ -22,3 +22,5 @@ Then to generate CSV files, you can run `node index.js csv [fields...] > output.
 "67403dc828034b2eb3c12b40674da3ad","cancelled"
 "50e3d6fa89124ee7a54a0ffe44bc0df7","unsuccessful"
 ```
+
+It also supports array access, so you can use a command like: `node index.js csv id data.items[0].quantity > output.csv`
