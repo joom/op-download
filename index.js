@@ -57,7 +57,7 @@ program
     var num = 0;
     db.tenders.find({}, {_id:0,id:1}, function (err, list) {
       var total = list.length;
-      async.parallel(
+      async.parallelLimit(
         list.map(function (doc) {
           return function (cb) {
             request("https://public.api.openprocurement.org/api/2.3/tenders/" + doc.id, function (err, res, body) {
@@ -70,7 +70,7 @@ program
               });
             });
           };
-        }) , function (err, results) {
+        }), 5, function (err, results) {
         process.stdout.write(chalk.green("Successfully fetched detailed info for " + num + "/" + total + " tenders in the database."));
         process.exit();
       });
